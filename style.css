@@ -1,0 +1,897 @@
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    /* Lock global scrolling */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: #f4f7fb;
+    color: #2c3e50;
+}
+
+/* ================= HERO BANNER ================= */
+.hero {
+    height: 110px;
+    /* Highly reduced to save vertical space */
+    flex-shrink: 0;
+    background-image: url("images/pollution-banner.jpg");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 40, 80, 0.65);
+}
+
+.hero-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 100%;
+}
+
+.hero-flex h1 {
+    font-size: 24px;
+    /* Smaller title */
+    margin: 0 0 2px 0;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.hero-flex p {
+    margin: 0;
+    color: #e8eef6;
+    font-size: 13px;
+}
+
+/* ================= TOGGLE ================= */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#themeIcon {
+    font-size: 18px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.switch input:checked+.slider {
+    background-color: #2a80ff;
+}
+
+.switch input:checked+.slider::before {
+    transform: translateX(22px);
+}
+
+/* ================= ACTION BUTTONS ================= */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 15px 0;
+    /* Reduced margin */
+    flex-shrink: 0;
+}
+
+.actions button {
+    background: #2a80ff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.actions button:hover {
+    background: #1f6ae1;
+}
+
+/* ================= KPI CARDS ================= */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    /* Reduced gap */
+    padding: 10px 40px;
+    /* Reduced padding */
+}
+
+.kpi-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* ================= MAIN GRID ================= */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    /* Reduced gap */
+    padding: 20px 40px;
+    /* Reduced padding */
+}
+
+#dashboardSection,
+#welcomeSection {
+    flex-grow: 1;
+    overflow-y: auto;
+    /* Enable internal scrolling */
+    padding-bottom: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* ================= CHART HEADER (FIXED POSITION) ================= */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    /* 🔥 legend moves right */
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+
+
+/* ================= CHART LEGEND ================= */
+.chart-legend {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    align-items: center;
+}
+
+.legend-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-item {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+/* Legend Colors */
+.legend-item.safe {
+    background: #27ae60;
+    /* Green */
+}
+
+.legend-item.moderate {
+    background: #f1c40f;
+    /* Yellow */
+}
+
+.legend-item.severe {
+    background: #e74c3c;
+    /* Red */
+}
+
+/* ================= MAP SECTION ================= */
+#mapSection {
+    flex-grow: 1;
+    display: none;
+    /* Controlled by JS */
+    padding: 20px 40px;
+    overflow: hidden;
+}
+
+#mapSection .card {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#map {
+    flex-grow: 1;
+    /* Map takes remaining space in card */
+    width: 100%;
+    min-height: 300px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* ================= DARK MODE ================= */
+body.dark {
+    background: #121212;
+    color: #eaeaea;
+}
+
+body.dark .hero-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+body.dark .card,
+body.dark .kpi-card {
+    background: #1e1e1e;
+    color: #eaeaea;
+    box-shadow: none;
+}
+
+body.dark .actions button {
+    background: #3a3a3a;
+}
+
+body.dark .actions button:hover {
+    background: #555;
+}
+
+body.dark input {
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+}
+
+/* ================= POLLUTION INFO CARD (POLISHED LIST) ================= */
+.info-header {
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f0f4f8;
+    padding-bottom: 10px;
+}
+
+.info-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a2a4e;
+}
+
+.subtitle {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.pollution-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    /* Align to top for better multi-line look */
+    gap: 15px;
+    padding: 16px;
+    /* Increased padding */
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    margin-bottom: 5px;
+    /* Add small space between blocks */
+}
+
+/* Subtle background tints for better separation */
+.info-item.pb {
+    background-color: #f8f9fa;
+    border-left: 4px solid #5a6268;
+}
+
+.info-item.cd {
+    background-color: #fdfcfe;
+    border-left: 4px solid #8e44ad;
+}
+
+.info-item.hg {
+    background-color: #f8fbfc;
+    border-left: 4px solid #2c3e50;
+}
+
+.info-item.as {
+    background-color: #fffaf5;
+    border-left: 4px solid #d35400;
+}
+
+.info-item.cr {
+    background-color: #f5fdfb;
+    border-left: 4px solid #16a085;
+}
+
+.info-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.info-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-content {
+    flex-grow: 1;
+}
+
+.info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.info-top strong {
+    font-size: 15px;
+    color: #2d3436;
+}
+
+.info-limit {
+    font-size: 11px;
+    font-weight: 700;
+    color: #e67e22;
+    background: #fff5eb;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.info-item p {
+    margin: 0;
+    font-size: 13px;
+    color: #636e72;
+    line-height: 1.4;
+}
+
+/* Polished Icon Colors */
+.info-item.pb .info-icon {
+    background: #5a6268;
+}
+
+.info-item.cd .info-icon {
+    background: #8e44ad;
+}
+
+.info-item.hg .info-icon {
+    background: #2c3e50;
+}
+
+.info-item.as .info-icon {
+    background: #d35400;
+}
+
+.info-item.cr .info-icon {
+    background: #16a085;
+}
+
+/* Dark Mode Support */
+body.dark .info-item {
+    background: #252525;
+    border-color: #333;
+}
+
+body.dark .info-item:hover {
+    background: #2a2a2a;
+}
+
+body.dark .info-top strong {
+    color: #eee;
+}
+
+body.dark .info-item p {
+    color: #aaa;
+}
+
+body.dark .info-limit {
+    background: #332211;
+    color: #f39c14;
+}
+
+body.dark .info-header {
+    border-bottom-color: #333;
+}
+
+body.dark .info-header h2 {
+    color: #eee;
+}
+
+/* ================= COMMAND CENTER (LANDING) ================= */
+#welcomeSection {
+    display: block;
+    padding: 20px;
+    /* Reduced from 40px */
+    overflow-y: auto;
+}
+
+.command-center {
+    max-width: 1200px;
+    /* Widened to fit 4 cards comfortably */
+    margin: 0 auto;
+}
+
+.cc-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.cc-badge {
+    display: inline-block;
+    background: #e1eeff;
+    color: #2a80ff;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.cc-header h2 {
+    font-size: 34px;
+    color: #1a2a4e;
+    margin-bottom: 10px;
+}
+
+.cc-header p {
+    color: #636e72;
+    font-size: 18px;
+}
+
+/* SERVICE GRID */
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 columns x 2 rows for better fit of 6 cards */
+    gap: 15px;
+    margin-top: 40px;
+}
+
+@media (min-width: 1400px) {
+    .service-grid {
+        grid-template-columns: repeat(6, 1fr);
+        /* All 6 in a row on very wide screens */
+    }
+}
+
+.service-card {
+    background: white;
+    padding: 40px 20px;
+    /* Reduced padding for single-line fit */
+    border-radius: 24px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #edf2f7;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.service-icon {
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+.service-card h3 {
+    font-size: 20px;
+    color: #1a2a4e;
+    margin-bottom: 12px;
+}
+
+.service-card p {
+    font-size: 14px;
+    color: #7f8c8d;
+    line-height: 1.5;
+}
+
+.service-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(42, 128, 255, 0.1);
+    border-color: #2a80ff;
+}
+
+.cc-footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #bdc3c7;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark Mode Command Center */
+body.dark .summary-box,
+body.dark .service-card {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark .cc-header h2,
+body.dark .summary-val,
+body.dark .service-card h3 {
+    color: #eee;
+}
+
+body.dark .cc-badge {
+    background: #252525;
+    color: #3498db;
+    border: 1px solid #333;
+}
+
+/* ================= POLLUTION TABLE ================= */
+.pollution-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.pollution-table th {
+    padding: 12px;
+    background: #f8fbff;
+    border-bottom: 2px solid #eef2f7;
+    color: #555;
+    font-weight: 600;
+}
+
+.pollution-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f4f8;
+}
+
+body.dark .pollution-table th {
+    background: #252525;
+    border-bottom-color: #333;
+    color: #aaa;
+}
+
+body.dark .pollution-table td {
+    border-bottom-color: #2a2a2a;
+}
+
+/* ================= CROP ADVISOR SECTION ================= */
+#cropSection {
+    padding: 20px;
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.crop-card {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.crop-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.crop-search-box {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.crop-search-box input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #eef2f7;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.crop-search-box input:focus {
+    border-color: #2a80ff;
+}
+
+.crop-search-box button {
+    padding: 12px 25px;
+    background: #2a80ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.crop-search-box button:hover {
+    background: #1a60cc;
+}
+
+.crop-tags {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    color: #7f8c8d;
+    font-size: 13px;
+}
+
+.crop-tags span {
+    background: #f1f4f8;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.crop-results-container {
+    padding-top: 20px;
+    border-top: 1px solid #f0f4f8;
+}
+
+.crop-analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: #f8fbff;
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.crop-info-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.crop-info-main h3 {
+    margin: 0;
+    color: #1a2a4e;
+}
+
+.crop-type-badge {
+    background: #e1eeff;
+    color: #2a80ff;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.suitability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.suitability-card {
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid #edf2f7;
+    background: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.suitability-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.suitability-card.suitable {
+    border-left: 5px solid #27ae60;
+}
+
+.suitability-card.restricted {
+    border-left: 5px solid #e67e22;
+}
+
+.suit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.suit-region-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.suit-region {
+    font-weight: 800;
+    font-size: 1.2em;
+    color: #1a2a4e;
+}
+
+.suit-location {
+    font-size: 0.8em;
+    color: #7f8c8d;
+    font-weight: 600;
+    margin-top: -2px;
+}
+
+.suit-status-pill {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.suit-status-pill.suitable {
+    background: #e8f5e9;
+    color: #27ae60;
+}
+
+.suit-status-pill.restricted {
+    background: #fff3e0;
+    color: #e67e22;
+}
+
+.suit-reason {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.suit-metals-mini {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.suit-metals-mini span {
+    background: #f8fbff;
+    padding: 3px 7px;
+    border-radius: 4px;
+}
+
+/* Suggestions Style */
+.suit-suggestions {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #fff9f0;
+    border-radius: 12px;
+    border: 1px dashed #ffd8a8;
+}
+
+.suggest-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: #e67e22;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.suggest-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.suggest-tags span {
+    background: white;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #d35400;
+    border: 1px solid #ffe8cc;
+}
+
+body.dark .suit-suggestions {
+    background: #2c1e14;
+    border-color: #4d2f00;
+}
+
+body.dark .suggest-tags span {
+    background: #3d2b1d;
+    color: #ff922b;
+    border-color: #5c3e00;
+}
+
+/* Animations */
+.suitability-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Dark Mode Crop Advisor */
+body.dark .crop-card,
+body.dark .suitability-card {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark .crop-info-main h3,
+body.dark .suit-region {
+    color: #eee;
+}
+
+body.dark .crop-analysis-header {
+    background: #252525;
+}
+
+body.dark .crop-tags span {
+    background: #2a2a2a;
+}
+
+body.dark .suit-metals-mini span {
+    background: #252525;
+}
+
+body.dark .crop-search-box input {
+    background: #252525;
+    border-color: #333;
+    color: white;
+}
+
+body.dark .suit-reason {
+    color: #aaa;
+}

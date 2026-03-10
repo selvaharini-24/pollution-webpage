@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pollution Monitoring Dashboard</title>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="visual.css?v=1">
+</head>
+
+<body>
+
+    <!-- ================= HERO BANNER ================= -->
+    <section class="hero">
+        <div class="hero-overlay">
+            <div class="hero-flex">
+
+                <!-- LEFT: TITLE -->
+                <div>
+                    <h1>🌍 Pollution Monitoring Dashboard</h1>
+                    <p>Environmental Risk Analysis & HMRI Visualization</p>
+                </div>
+
+                <!-- RIGHT: DARK MODE TOGGLE -->
+                <div class="theme-toggle">
+                    <span id="themeIcon">🌙</span>
+                    <label class="switch">
+                        <input type="checkbox" onclick="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ACTION BUTTONS (HIDDEN BY DEFAULT) ================= -->
+    <section class="actions" id="navButtons" style="display: none;">
+        <button onclick="loadData()">Pollution Data</button>
+        <button onclick="loadHMRI()">HMRI Risk</button>
+        <button onclick="loadInsights()">AI Insights</button>
+        <button onclick="showMap()">Map View</button>
+        <button onclick="showCrops()">Crop Advisor</button>
+        <button onclick="showVisual()">Visual Scanner</button>
+        <button onclick="exportPDF()">Export PDF</button>
+    </section>
+
+    <!-- ================= SOIL HEALTH COMMAND CENTER (LANDING PAGE) ================= -->
+    <div id="welcomeSection">
+        <div class="command-center">
+            <header class="cc-header">
+                <div class="cc-badge">PRO MONITORING</div>
+                <h2>Soil Health Command Center</h2>
+                <p>Global environmental overview and real-time risk assessment</p>
+            </header>
+
+            <!-- MINIMAL VIEW: DIRECT ACCESS CARDS -->
+            <div class="service-grid">
+                <div class="service-card" onclick="loadData()">
+                    <div class="service-icon">🔬</div>
+                    <h3>Analyze Soil Data</h3>
+                    <p>Browser raw metal concentrations and soil quality standards.</p>
+                </div>
+                <div class="service-card" onclick="loadHMRI()">
+                    <div class="service-icon">📊</div>
+                    <h3>Risk Assessment</h3>
+                    <p>View HMRI scores and risk level distribution charts.</p>
+                </div>
+                <div class="service-card" onclick="loadInsights()">
+                    <div class="service-icon">🤖</div>
+                    <h3>AI Remediation</h3>
+                    <p>Get smart remediation solutions and health impact insights.</p>
+                </div>
+                <div class="service-card" onclick="showMap()">
+                    <div class="service-icon">📍</div>
+                    <h3>Map View</h3>
+                    <p>Explore geographical risk clusters across all regions.</p>
+                </div>
+                <div class="service-card" onclick="showCrops()">
+                    <div class="service-icon">🌱</div>
+                    <h3>Crop Advisor</h3>
+                    <p>Find the best soil for your crops based on metal tolerance.</p>
+                </div>
+                <div class="service-card" onclick="showVisual()">
+                    <div class="service-icon">👁️</div>
+                    <h3>Visual Inspector</h3>
+                    <p>Identify crops from photos and instantly analyze soil suitability.</p>
+                </div>
+            </div>
+
+            <footer class="cc-footer">
+                <p>Click any card to explore detailed analytics</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboardSection" style="display: none;">
+
+        <!-- KPI CARDS -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Total Regions</h3>
+                <p id="kpiRegions">–</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Highest Risk</h3>
+                <p id="kpiRisk">–</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Average HMRI</h3>
+                <p id="kpiAvg">–</p>
+            </div>
+        </section>
+
+        <!-- MAIN CONTENT -->
+        <section class="main-grid">
+
+            <!-- DETAILS CARD -->
+            <div class="card">
+                <h2>Details</h2>
+                <input type="text" id="searchInput" placeholder="Search by region..." onkeyup="filterTable()">
+                <div id="output">
+                    Click a button above to load data
+                </div>
+            </div>
+
+            <!-- CHART CARD -->
+            <div class="card" id="chartCard">
+
+                <!-- HEADER WITH LEGEND ON RIGHT -->
+                <div class="chart-header">
+                    <h2>HMRI Chart</h2>
+
+                    <div class="chart-legend">
+                        <div class="legend-box">
+                            <span class="legend-item safe"></span>
+                            <span>Safe</span>
+                        </div>
+
+                        <div class="legend-box">
+                            <span class="legend-item moderate"></span>
+                            <span>Moderate</span>
+                        </div>
+
+                        <div class="legend-box">
+                            <span class="legend-item severe"></span>
+                            <span>High / Severe</span>
+                        </div>
+                    </div>
+                </div>
+
+                <canvas id="riskChart"></canvas>
+
+            </div>
+
+            <!-- POLLUTION INFO CARD (CLARIFIED) -->
+            <div class="card" id="pollutionInfoCard" style="display:none;">
+                <div class="info-header">
+                    <h2>🌱 Soil Quality Standards</h2>
+                    <p class="subtitle">Environmental Guidelines for Soil Safety</p>
+                </div>
+
+                <div class="pollution-info-list">
+                    <div class="info-item pb">
+                        <div class="info-icon">Pb</div>
+                        <div class="info-content">
+                            <div class="info-top">
+                                <strong>Lead</strong>
+                                <span class="info-limit">Limit: 10 mg/kg</span>
+                            </div>
+                            <p>Neurotoxic; affects brain development and nervous system.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item cd">
+                        <div class="info-icon">Cd</div>
+                        <div class="info-content">
+                            <div class="info-top">
+                                <strong>Cadmium</strong>
+                                <span class="info-limit">Limit: 3 mg/kg</span>
+                            </div>
+                            <p>Accumulates in kidneys; linked to bone fragility.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item hg">
+                        <div class="info-icon">Hg</div>
+                        <div class="info-content">
+                            <div class="info-top">
+                                <strong>Mercury</strong>
+                                <span class="info-limit">Limit: 1 mg/kg</span>
+                            </div>
+                            <p>Highly toxic to the nervous and digestive systems.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item as">
+                        <div class="info-icon">As</div>
+                        <div class="info-content">
+                            <div class="info-top">
+                                <strong>Arsenic</strong>
+                                <span class="info-limit">Limit: 10 mg/kg</span>
+                            </div>
+                            <p>Carcinogenic; causes skin lesions and respiratory issues.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item cr">
+                        <div class="info-icon">Cr</div>
+                        <div class="info-content">
+                            <div class="info-top">
+                                <strong>Chromium</strong>
+                                <span class="info-limit">Limit: 50 mg/kg</span>
+                            </div>
+                            <p>Affects respiratory tract; potential carcinogen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <!-- ================= MAP SECTION ================= -->
+    <div id="mapSection" style="display:none;">
+        <div class="card">
+            <h2>Geographical Reference</h2>
+            <div id="map"></div>
+            <button onclick="showDashboard()">⬅ Back to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- ================= CROP SECTION ================= -->
+    <div id="cropSection" style="display:none;">
+        <div class="card crop-card">
+            <header class="crop-header">
+                <h2>🌱 Crop Suitability Advisor</h2>
+                <p>Enter a plant name to check regional compatibility and safety insights.</p>
+                <div class="crop-search-box">
+                    <input type="text" id="cropInput" placeholder="e.g., Sunflower, Rice, Spinach..."
+                        onkeypress="if(event.key === 'Enter') searchCrop()">
+                    <button onclick="searchCrop()">Analyze Suitability</button>
+                </div>
+                <div class="crop-tags" id="cropSuggestions">
+                    <span>Try: Sunflower</span>
+                    <span>Rice</span>
+                    <span>Spinach</span>
+                    <span>Mustard</span>
+                    <span>Tomato</span>
+                </div>
+            </header>
+
+            <div id="cropResults" class="crop-results-container">
+                <!-- Populated by JS -->
+                <div class="empty-state">
+                    <p>Enter a crop name above to see detailed regional suitability analysis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= VISUAL SECTION ================= -->
+    <div id="visualSection" style="display:none;">
+        <div class="card visual-card">
+            <header class="visual-header">
+                <h2>👁️ AI Visual Inspector</h2>
+                <p>Upload a photo of a plant or crop to identify it and find its perfect soil match.</p>
+            </header>
+
+            <div class="upload-container" id="dropZone">
+                <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <p>Drag & Drop image or <strong>Browse</strong></p>
+                    <span>Supports JPG, PNG</span>
+                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleImageUpload(event)">
+                </div>
+
+                <div id="previewContainer" style="display:none;">
+                    <div class="scanner-wrapper">
+                        <img id="imagePreview" src="" alt="Preview">
+                        <div id="scanLine" class="scan-line" style="display:none;"></div>
+                    </div>
+                    <div class="visual-controls">
+                        <button class="btn-scan" onclick="startVisualScan()">Identify & Analyze</button>
+                        <button class="btn-clear" onclick="clearVisual()">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="visualResults" class="visual-results-container" style="display:none;">
+                <div class="id-badge">
+                    <span class="id-label">Detected Identity:</span>
+                    <strong id="identifiedText">Scanning...</strong>
+                </div>
+                <!-- Suitability results will be injected here -->
+                <div id="visualSuitability" class="crop-results-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=29"></script>
+
+</body>
+
+</html>
